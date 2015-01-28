@@ -1,0 +1,15 @@
+﻿.watc-container {
+    
+}
+
+.watc-activator {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 5px 15px;
+    display: inline-block;
+    opacity: .8;
+    text-decoration: none;
+    background-color: gray;
+    color: white;
+}
