@@ -1,8 +1,22 @@
-﻿<script type="text/html" id="watc-container">
+﻿<script type="text/html" id="tpl-watc-container">
     
     <div class="watc-container">
-
-
+        <div><span id="watc-method"></span> <span id="watc-route"></span></div>
+        <div>Route Params: </div>
+        <div id="watc-routeparams"></div>
     </div>
 
+</script>
+
+
+
+<script type="text/html" id="tpl-watc-labeled-input">
+    <div>
+        <span id="{{label-id}}"></span>:
+        <span id="{{input-id}}"></span>
+    </div>
+</script>
+
+<script type="text/html" id="tpl-watc-text-input">
+    <input type="text" id="{{id}}"/>
 </script>
