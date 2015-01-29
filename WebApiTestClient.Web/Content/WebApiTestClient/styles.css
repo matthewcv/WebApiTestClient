@@ -20,3 +20,20 @@
     background-color: gray;
     color: white;
 }
+
+.comma {
+    float:left
+}
+
+.complex-type {
+    
+}
+
+#watc-panel li {
+    list-style-type: none;
+    
+}
+
+#watc-panel ul {
+    margin: 0;
+}

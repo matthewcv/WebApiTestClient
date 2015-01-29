@@ -51,13 +51,14 @@ namespace WebApiTestClient.Web.Controllers
             return thing;
         }
 
-        /// <summary>
-        /// not working
-        /// </summary>
-        /// <param name="thing"></param>
-        /// <returns></returns>
         [HttpPost, Route("ObjectParameterWithListOfStringsProperty")]
         public Thing ObjectParameterWithListOfStringsProperty(Thing thing)
+        {
+            return thing;
+        }
+
+        [HttpPost, Route("ObjectParameterWithNestedObjectProperty")]
+        public Something ObjectParameterWithNestedObjectProperty(Something thing)
         {
             return thing;
         }
@@ -116,9 +117,10 @@ namespace WebApiTestClient.Web.Controllers
     {
         public string Blah { get; set; }
 
-        public Dictionary<string, string> Stuff { get; set; }
+        public DateTime Belch { get; set; }
 
-        public List<Thing> Things { get; set; } 
+        public int HowMany { get; set; }
+
     }
     public class Thing
     {

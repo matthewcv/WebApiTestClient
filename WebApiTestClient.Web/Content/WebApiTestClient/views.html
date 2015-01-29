@@ -1,22 +1,125 @@
 ﻿<script type="text/html" id="tpl-watc-container">
-    
-    <div class="watc-container">
-        <div><span id="watc-method"></span> <span id="watc-route"></span></div>
+    <div id="watc-panel">
+
+        <div class="watc-container">
+            <div><span id="watc-method">{{Method}}</span> <span id="watc-route">{{Route}}</span></div>
+        </div>
+        {{#if RouteParameters.length}}
         <div>Route Params: </div>
-        <div id="watc-routeparams"></div>
-    </div>
+        {{> url-input-list RouteParameters}}
+        {{/if}}
 
+        {{#if QueryParameters.length}}
+        <div>Query Params: </div>
+        {{> url-input-list QueryParameters}}
+        {{/if}}
+
+        {{#if BodyParameter}}
+        <div>Body ({{BodyParameter.TypeName}}{{#if BodyParameter.IsList}}[]{{/if}}): </div>
+        {{> any-type BodyParameter}}
+
+        {{/if}}
+    </div>
+</script>
+<script type="text/html" id="tpl-watc-any-type">
+    {{#if this.IsList}}
+    {{> list-type}}
+    {{else}}
+        {{> complex-type}}
+    {{/if}}
+</script>
+
+<script type="text/html" id="tpl-watc-list-type">
+    <div >
+        <div>[</div>
+        {{#if IsSimple}}
+        {{> input-list}}
+        {{else}}
+        <div>
+            {{> complex-type}}
+            
+            {{> complex-list-commands}}
+        </div>   
+        {{/if}}
+        
+        <div>]</div>
+    </div>
+</script>
+
+<script type="text/html" id="tpl-watc-complex-list-commands">
+    <a href="#less" data-cmd="complexListRemove">-</a>
+    <a href="#more" data-cmd="complexListAdd" data-id="{{id}}" data-type-name="{{TypeName}}">+</a>
+</script>
+
+<script type="text/html" id="tpl-watc-complex-type">
+    <div class="complex-type" id="{{id}}">
+        <span>{</span>
+        <div id="{{id}}.properties"></div>
+        <span>}</span>
+    </div>
+</script>
+
+<script type="text/html" id="tpl-watc-complex-type-properties">
+    <ul>
+        {{#each Properties}}
+        {{#if IsSimple}}
+        {{#if IsList}}
+        {{> labeled-input-list}}
+        {{else}}
+        {{> labeled-input}}
+        {{/if}}
+        {{else}}
+        <li>
+            {{#if IsList}}
+            <div id="{{id}}">{{Name}} ({{TypeName}}[]): [</div>
+            <div>
+
+                {{> complex-list-commands}}
+            </div>
+            <div>]</div>
+            {{else}}
+            <div id="{{id}}">{{Name}} ({{TypeName}}): {</div>
+            <a href="#set value" data-cmd="innerComplexPropery" data-id="{{id}}" data-type-name="{{TypeName}}">set value</a>
+            <div id="{{id}}.properties"></div>
+
+            <div>}</div>
+            {{/if}}
+        </li>
+        {{/if}}
+        
+        {{/each}}
+    </ul>
+</script>
+
+<script type="text/html" id="tpl-watc-url-input-list">
+        <ul>
+            {{#each this}}
+            {{#if IsList}}
+            {{> labeled-input-list}}
+            {{else}}
+            {{> labeled-input}}
+            {{/if}}
+            {{/each}}
+        </ul>
+
+    </script>
+
+
+    <script type="text/html" id="tpl-watc-labeled-input">
+        <li>
+            <span>{{Name}} ({{TypeName}})</span>:
+            <input type="text" name="{{id}}" />
+        </li>
+    </script>
+
+<script type="text/html" id="tpl-watc-labeled-input-list">
+    <li>
+        <span>{{Name}} ({{TypeName}}[])</span>:
+        {{> input-list}}
+    </li>
 </script>
 
 
-
-<script type="text/html" id="tpl-watc-labeled-input">
-    <div>
-        <span id="{{label-id}}"></span>:
-        <span id="{{input-id}}"></span>
-    </div>
-</script>
-
-<script type="text/html" id="tpl-watc-text-input">
-    <input type="text" id="{{id}}"/>
+<script type="text/html" id="tpl-watc-input-list">
+        <input type="text" name="{{id}}" />, <input type="text" name="{{id}}" /> <a href="#less" data-cmd="inputListRemove">-</a> <a href="#more" data-cmd="inputListAdd">+</a>
 </script>
