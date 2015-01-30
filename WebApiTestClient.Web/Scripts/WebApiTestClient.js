@@ -75,6 +75,9 @@
 
                 type.Properties.forEach(function(p) {
                     p.id = id + "." + p.Name;
+                    if (p.IsList) {
+                        p.id = p.id + '[0]';
+                    }
                 })
 
                 var html = templates['complex-type-properties'](type);

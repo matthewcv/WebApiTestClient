@@ -2,9 +2,9 @@
     
 }
 #watc-panel {
-       position: fixed;
+    position: fixed;
     bottom: 0;
-    right: 0;
+    -right: 0;
     border: solid 1px burlywood;
     background: whitesmoke;
     padding: 10px;

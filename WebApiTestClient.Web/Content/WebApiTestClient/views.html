@@ -15,17 +15,21 @@
         {{/if}}
 
         {{#if BodyParameter}}
-        <div>Body ({{BodyParameter.TypeName}}{{#if BodyParameter.IsList}}[]{{/if}}): </div>
+        <div>Body ({{#if BodyParameter.IsDictionary}}{ {{BodyParameter.KeyTypeName}} : {{BodyParameter.ValueTypeName}} } {{else}}{{BodyParameter.TypeName}}{{#if BodyParameter.IsList}}[]{{/if}}{{/if}}): </div>
         {{> any-type BodyParameter}}
 
         {{/if}}
     </div>
 </script>
 <script type="text/html" id="tpl-watc-any-type">
-    {{#if this.IsList}}
+    {{#if IsList}}
     {{> list-type}}
     {{else}}
-        {{> complex-type}}
+    {{#if IsDictionary}}
+
+    {{else}}
+    {{> complex-type}}
+    {{/if}}
     {{/if}}
 </script>
 
