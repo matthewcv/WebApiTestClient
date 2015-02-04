@@ -32,7 +32,7 @@
 
         if (apiDescription.BodyParameter) {
             apiDescription.BodyParameter.id = apiDescription.BodyParameter.Name;
-            if (apiDescription.BodyParameter.IsList) {
+            if (apiDescription.BodyParameter.IsList || apiDescription.BodyParameter.IsDictionary) {
                 apiDescription.BodyParameter.id = apiDescription.BodyParameter.id + "[0]";
             }
 
@@ -171,10 +171,8 @@
             //these are the existing objects.
         },
 
-        complexListRemove:function(el) {
-            var divs = [].filter.call(el.parentNode.childNodes, function (n) {
-                return n.nodeName.toLowerCase() == 'div';
-            });
+        complexListRemove: function (el) {
+            var divs = dom.childs(el.parentNode, "div");
 
             if (divs.length ) {
                 var last = divs[divs.length - 1];
@@ -207,12 +205,18 @@
 
         dictionaryAdd: function (el) {
             var id = el.getAttribute("data-id");
+
+            console.log(id);
+
             var typeName = el.getAttribute("data-type-name");
 
             var type = apiDescription.ComplexTypes.filter(function (t) {
                 return t.Name == typeName;
             });
 
+            var lis = dom.childs(dom.prevSib(el,'ul'), "li");
+
+            id = id.substring(0, id.lastIndexOf("[")) + "[" + lis.length + "]";
 
             var context = { id: id, IsSimple: type.length==0, ValueTypeName:typeName }
             var html = templates['dictionary-type-item'](context).trim();
@@ -287,6 +291,16 @@
             }
             return found;
 
+        },
+
+        //get the child nodes of a node or optionally by a specific node name
+        childs: function (node, nodeName) {
+
+            var childs = [].filter.call(node.childNodes, function (n) {
+                return !nodeName || n.nodeName.toLowerCase() == nodeName.toLowerCase();
+            });
+
+            return childs;
         }
     }
 

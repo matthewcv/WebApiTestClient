@@ -28,8 +28,16 @@ namespace WebApiTestClient.Web.Controllers
             return whatever + ", " + another;
         }
 
+
+        [HttpPost, Route("ObjectParameterWithSimpleProperties")]
+        public ClassWithSimpleProperties ObjectParameterWithSimpleProperties(ClassWithSimpleProperties param)
+        {
+            return param;
+        }
+
+
         [HttpPost, Route("ListOfObjectsAsParameter")]
-        public List<Something> ListOfObjectsAsParameter(List<Something> things)
+        public List<ClassWithComplexObjectProperty> ListOfObjectsAsParameter(List<ClassWithComplexObjectProperty> things)
         {
             return things;
         }
@@ -46,26 +54,26 @@ namespace WebApiTestClient.Web.Controllers
         }
 
         [HttpPost, Route("ObjectParameterWithListOfObjectsProperty")]
-        public Another ObjectParameterWithListOfObjectsProperty(Another thing)
+        public ClassWithObjectListProperty ObjectParameterWithListOfObjectsProperty(ClassWithObjectListProperty thing)
         {
             return thing;
         }
 
         [HttpPost, Route("ObjectParameterWithListOfStringsProperty")]
-        public Thing ObjectParameterWithListOfStringsProperty(Thing thing)
+        public ClassWithStringListParameter ObjectParameterWithListOfStringsProperty(ClassWithStringListParameter thing)
         {
             return thing;
         }
 
         [HttpPost, Route("ObjectParameterWithNestedObjectProperty")]
-        public Something ObjectParameterWithNestedObjectProperty(Something thing)
+        public ClassWithComplexObjectProperty ObjectParameterWithNestedObjectProperty(ClassWithComplexObjectProperty thing)
         {
             return thing;
         }
 
 
         [HttpPost, Route("ObjectParameterWithStringStringDictionaryProperty")]
-        public Marglar ObjectParameterWithStringStringDictionaryProperty(Marglar thing)
+        public ClassWithStringDictionaryProp ObjectParameterWithStringStringDictionaryProperty(ClassWithStringDictionaryProp thing)
         {
             return thing;
         }
@@ -90,30 +98,39 @@ namespace WebApiTestClient.Web.Controllers
         /// <param name="things"></param>
         /// <returns></returns>
         [HttpPost, Route("IntObjectDictionaryAsParameter")]
-        public Dictionary<int, Something> IntObjectDictionaryAsParameter(Dictionary<int, Something> things)
+        public Dictionary<int, ClassWithComplexObjectProperty> IntObjectDictionaryAsParameter(Dictionary<int, ClassWithComplexObjectProperty> things)
         {
             return things;
         }
     }
 
-    public class Something
+    public class ClassWithComplexObjectProperty
     {
         public string StringProp { get; set; }
 
         public int IntProp { get; set; }
 
-        public Marglar TheAnother { get; set; }
+        public ClassWithSimpleProperties TheAnother { get; set; }
     }
 
 
-    public class Another
+    public class ClassWithStringDictionaryProp
+    {
+        public string StringProp { get; set; }
+
+        public int IntProp { get; set; }
+
+        public Dictionary<string, string> TheDict { get; set; } 
+    }
+
+    public class ClassWithObjectListProperty
     {
         public string AnotherString { get; set; }
 
-        public List<Something> Somethings { get; set; }
+        public List<ClassWithSimpleProperties> Somethings { get; set; }
     }
 
-    public class Marglar
+    public class ClassWithSimpleProperties
     {
         public string Blah { get; set; }
 
@@ -121,8 +138,10 @@ namespace WebApiTestClient.Web.Controllers
 
         public int HowMany { get; set; }
 
+        public bool IsIt { get; set; }
+
     }
-    public class Thing
+    public class ClassWithStringListParameter
     {
         public string AnotherString { get; set; }
 
