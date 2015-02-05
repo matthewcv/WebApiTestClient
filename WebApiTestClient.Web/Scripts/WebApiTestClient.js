@@ -45,9 +45,12 @@
 
     function showUi(jsx) {
 
-        var transformed = JSXTransformer.exec(jsx);
-        
-        React.render(WatcPanel, dom.el('div', null, document.body));
+        var transformed = JSXTransformer.transform(jsx);
+        eval(transformed.code);
+        var panel = React.createElement(WatcPanel, apiViewContext);
+        console.dir(panel);
+        //panel.setState({things:'stuff'})
+        React.render(panel, dom.el('div', null, document.body));
 
     }
 
