@@ -35,6 +35,12 @@ namespace WebApiTestClient.Web.Controllers
             return param;
         }
 
+        [HttpPost, Route("ObjectParameterWithComplexProperty")]
+        public ClassWithComplexObjectProperty ObjectParameterWithComplexProperty(ClassWithComplexObjectProperty param)
+        {
+            return param;
+        }
+
 
         [HttpPost, Route("ListOfObjectsAsParameter")]
         public List<ClassWithComplexObjectProperty> ListOfObjectsAsParameter(List<ClassWithComplexObjectProperty> things)

@@ -3,8 +3,8 @@
 }
 #watc-panel {
     position: fixed;
-    bottom: 0;
-    -right: 0;
+    bottom: 15px;
+    left: 15px;
     border: solid 1px burlywood;
     background: whitesmoke;
     padding: 10px;
@@ -21,12 +21,13 @@
     color: white;
 }
 
-.comma {
-    float:left
+
+.properties {
+    padding: 0 0 0 15px;
 }
 
-.complex-type {
-    
+span.comma:not(:last-child)::after  {
+    content: ", ";
 }
 
 #watc-panel li {

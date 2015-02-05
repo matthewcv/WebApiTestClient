@@ -1,15 +1,4 @@
-﻿<script type="text/html" id="tpl-watc-any-type">
-    {{#if IsList}}
-    {{> list-type}}
-    {{else}}
-    {{#if IsDictionary}}
-    {{> dictionary-type}}
-    {{else}}
-    {{> complex-type}}
-    {{/if}}
-    {{/if}}
-</script>
-
+﻿
 <script type="text/html" id="tpl-watc-dictionary-type">
     <div>
         <div>{</div>
@@ -100,38 +89,3 @@
     </ul>
 </script>
 
-<script type="text/html" id="tpl-watc-url-input-list">
-    <ul>
-        {{#each this}}
-        {{#if IsList}}
-        {{> labeled-input-list}}
-        {{else}}
-        {{> labeled-input}}
-        {{/if}}
-        {{/each}}
-    </ul>
-
-</script>
-
-
-<script type="text/html" id="tpl-watc-labeled-input">
-    <li>
-        <span>{{Name}} ({{TypeName}})</span>:
-        <input type="text" name="{{id}}" />
-    </li>
-</script>
-
-<script type="text/html" id="tpl-watc-labeled-input-list">
-    <li>
-        <span>{{Name}} ({{TypeName}}[])</span>:
-        {{> input-list}}
-    </li>
-</script>
-
-
-<script type="text/html" id="tpl-watc-input-list">
-    <input type="text" name="{{id}}" />,
-    <input type="text" name="{{id}}" />
-    <a href="#less" data-cmd="inputListRemove">-</a>
-    <a href="#more" data-cmd="inputListAdd">+</a>
-</script>

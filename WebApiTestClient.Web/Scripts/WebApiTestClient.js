@@ -1,6 +1,32 @@
 ﻿(function() {
 
     var apiDescription = null;
+    var currentId = 0;
+    var descCache = {};
+
+    function nextId(desc) {
+        currentId++;
+
+        desc.id = currentId.toString();
+        descCache[desc.id] = desc;
+    }
+
+    function getComplexType(desc) {
+        var typeName = desc.TypeName || desc.ValueTypeName;
+
+        var found = apiDescription.ComplexTypes.filter(function(t) {
+            return t.Name == typeName;
+        });
+
+        if (found.length) {
+            return found[0];
+        }
+        return null;
+    }
+
+    function clone(thing) {
+        return JSON.parse(JSON.stringify(thing));
+    }
 
     //the name of the api is the last segment of the url. 
     var apiId = window.location.pathname.split('/').pop();
@@ -13,30 +39,46 @@
     function getReadyToUseTestClient(data) {
         apiDescription = data;
         setUpApiDescForUi();
-        console.dir(data);
+        console.dir(apiDescription);
         dom.el("link", {"href": "/Content/WebApiTestClient/styles.css","rel":"stylesheet","type": "text/css"}, document.head);
         dom.el("script", { "src": "//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js", "type": "text/javascript" }, document.head);
         makeActivatorButton();
-
-
     }
 
     //take the metadata and extend the objects a bit to help out with the handlebars templates
     function setUpApiDescForUi() {
         apiDescription.QueryParameters.forEach(function(p) {
-            p.id = "$qp." + p.Name;
+            nextId(p);
         });
         apiDescription.RouteParameters.forEach(function(p) {
-            p.id = "$rp." + p.Name;
+            nextId(p);
         });
 
         if (apiDescription.BodyParameter) {
-            apiDescription.BodyParameter.id = apiDescription.BodyParameter.Name;
-            if (apiDescription.BodyParameter.IsList || apiDescription.BodyParameter.IsDictionary) {
-                apiDescription.BodyParameter.id = apiDescription.BodyParameter.id + "[0]";
-            }
-
+            setUpProperties(apiDescription.BodyParameter);
         }
+    }
+
+
+    function setUpProperties(desc) {
+        if (!desc.id) {
+            nextId(desc);
+        }
+            
+        var ct = getComplexType(desc);
+
+        
+        if (ct) {
+            if (desc.IsList) {
+                desc.Items = [];
+            } else {
+                desc.Properties = clone(ct.Properties);
+                desc.Properties.forEach(function(p) {
+                    nextId(p);
+                });
+            }
+        }
+        
     }
 
     //put the button on the screen that the user will click to activate the test client.
@@ -63,35 +105,10 @@
         var html = templates['container'](apiDescription);
         dom.html(html, document.body);
 
-        if (apiDescription.BodyParameter && !apiDescription.BodyParameter.IsSimple) {
-            addProperties(apiDescription.BodyParameter.id,apiDescription.BodyParameter.TypeName);
-        }
 
         dom.gid('watc-panel').addEventListener("click", clickHandler);
     }
 
-    //invoke the template that builds out the ui for the properties of a complex object then insert the resultant HTML into the dom at the appropriate palce
-    function addProperties(id, typeName) {
-        if (typeName) {
-            var type = apiDescription.ComplexTypes.filter(function(t) {
-                return t.Name == typeName;
-            });
-            if (type.length) {
-                type = type[0];
-
-                type.Properties.forEach(function(p) {
-                    p.id = id + "." + p.Name;
-                    if (p.IsList) {
-                        p.id = p.id + '[0]';
-                    }
-                })
-
-                var html = templates['complex-type-properties'](type);
-
-                dom.html(html, dom.gid(id + '.properties'));
-            }
-        }
-    }
 
     //handles any click event from within the panel that contains the test client
     function clickHandler(ev) {
@@ -123,66 +140,33 @@
     var commands = {
 
         inputListRemove:function(el) {
-            var inputs = el.parentNode.querySelectorAll("input");
-            if (inputs.length == 1) {
-                return;
+            var id = el.getAttribute("data-id");
+            var container = dom.gid('input-list-' + id);
+            var inputs = dom.childs(container, 'span');
+            if (inputs.length) {
+                container.removeChild(inputs[inputs.length - 1]);
             }
-            var last = inputs[inputs.length - 1];
-
-            el.parentNode.removeChild(last.previousSibling);
-
-            el.parentNode.removeChild(last);
         },
 
         inputListAdd:function(el) {
-            var inputs = el.parentNode.querySelectorAll("input");
-            var insertPoint = inputs[inputs.length - 1].nextSibling;
-            var newInput = inputs[inputs.length - 1].cloneNode();
-            newInput.value = null;
+            var id = el.getAttribute("data-id");
+            var desc = descCache[id];
+            var html = templates['simple-input'](desc);
 
-            el.parentNode.insertBefore(document.createTextNode(", "), insertPoint);
-            el.parentNode.insertBefore(newInput, insertPoint);
+            var container = dom.gid('input-list-' + id);
+
+            dom.html(html, container);
+
         },
 
         complexListAdd:function(el) {
             var typeName = el.getAttribute("data-type-name");
             var id = el.getAttribute("data-id");
-            //id will have [0] at end.  Need to get the last div so that the new one can have the next index.
-            var divs = [].filter.call(el.parentNode.childNodes, function(n) {
-                return n.nodeName.toLowerCase() == 'div';
-            });
-            var last;
-            if (divs.length) {
-                last = divs[divs.length - 1];
-            }
 
-            var idx = last == null ? 0 : divs.length;
-            var newId = id.substring(0, id.lastIndexOf("[")) + "[" + idx + "]";
-
-            var html = templates["complex-type"]({ id: newId });
-            if (idx > 0) {
-                html = "<span class='comma'>, </span>" + html;
-            }
-            var insertPoint = last == null ? el.parentNode.firstChild : last.nextSibling;
-
-            dom.html(html, el.parentNode, insertPoint);
-
-            addProperties(newId, typeName);
-            //these are the existing objects.
         },
 
         complexListRemove: function (el) {
-            var divs = dom.childs(el.parentNode, "div");
 
-            if (divs.length ) {
-                var last = divs[divs.length - 1];
-                
-                while (last.previousSibling && last.previousSibling.nodeName.toLowerCase() != "div") {
-                    last.parentNode.removeChild(last.previousSibling);
-                }
-
-                last.parentNode.removeChild(last);
-            }
 
         },
 
@@ -231,14 +215,26 @@
             }
         },
 
-        innerComplexPropery:function(el) {
+        complexObjectSetValue: function (el) {
 
             var id = el.getAttribute("data-id");
             var typeName = el.getAttribute("data-type-name");
 
-            addProperties(id, typeName);
 
-            el.parentElement.removeChild(el);
+            var prop = descCache[id];
+
+            setUpProperties(prop);
+
+
+            var toReplace = dom.gid('property-' + id);
+            toReplace.removeAttribute('id');
+
+            var container = toReplace.parentNode;
+
+            var html = templates['named-property'](prop);
+            dom.html(html, container, toReplace);
+            container.removeChild(toReplace);
+
 
         }
     }
