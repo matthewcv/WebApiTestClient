@@ -37,7 +37,7 @@
 
     //callback from getting meta data.
     function getReadyToUseTestClient(data) {
-        apiDescription = data;
+        window.apiDescription = apiDescription = data;
         setUpApiDescForUi();
         console.dir(apiDescription);
         dom.el("link", {"href": "/Content/WebApiTestClient/styles.css","rel":"stylesheet","type": "text/css"}, document.head);
@@ -59,6 +59,14 @@
         }
     }
 
+    function addComplexItemToList(parent, ct) {
+        var item = clone(ct);
+        nextId(item);
+        parent.Items.push(item);
+        item.Properties.forEach(function (p) {
+            nextId(p);
+        });
+    }
 
     function setUpProperties(desc) {
         if (!desc.id) {
@@ -71,6 +79,8 @@
         if (ct) {
             if (desc.IsList) {
                 desc.Items = [];
+                addComplexItemToList(desc,ct);
+
             } else {
                 desc.Properties = clone(ct.Properties);
                 desc.Properties.forEach(function(p) {
@@ -160,8 +170,15 @@
         },
 
         complexListAdd:function(el) {
-            var typeName = el.getAttribute("data-type-name");
+
             var id = el.getAttribute("data-id");
+
+            var container = dom.gid('list-container-' + id);
+            var desc = descCache[id];
+            var item = getComplexType(desc);
+            addComplexItemToList(desc, item);
+            var html = templates['complex-object-list-item'](item);
+            dom.html(html, container);
 
         },
 
