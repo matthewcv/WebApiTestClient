@@ -136,6 +136,8 @@ namespace WebApiTestClient.Web.Controllers
         public List<ClassWithSimpleProperties> Somethings { get; set; }
     }
 
+    
+
     public class ClassWithSimpleProperties
     {
         public string Blah { get; set; }

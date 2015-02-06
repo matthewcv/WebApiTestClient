@@ -38,6 +38,8 @@
     //callback from getting meta data.
     function getReadyToUseTestClient(data) {
         window.apiDescription = apiDescription = data;
+        window.descCache = descCache;
+
         setUpApiDescForUi();
         console.dir(apiDescription);
         dom.el("link", {"href": "/Content/WebApiTestClient/styles.css","rel":"stylesheet","type": "text/css"}, document.head);
@@ -55,17 +57,44 @@
         });
 
         if (apiDescription.BodyParameter) {
-            setUpProperties(apiDescription.BodyParameter);
+            if (apiDescription.BodyParameter.IsDictionary) {
+                setUpDictionary(apiDescription.BodyParameter);
+            } else {
+                setUpProperties(apiDescription.BodyParameter);
+            }
         }
+    }
+
+
+    function setUpDictionary(desc) {
+        nextId(desc);
+
+        var item = {
+            Key: { TypeName: desc.KeyTypeName },
+            Value: {TypeName: desc.ValueTypeName }
+        }
+
+        nextId(item.Key);
+        nextId(item.Value);
+
+        if (!desc.Items) {
+            desc.Items = [];
+        }
+
+        desc.Items.push(item);
     }
 
     function addComplexItemToList(parent, ct) {
         var item = clone(ct);
         nextId(item);
+        if (!parent.Items) {
+            parent.Items = [];
+        }
         parent.Items.push(item);
         item.Properties.forEach(function (p) {
             nextId(p);
         });
+        return item;
     }
 
     function setUpProperties(desc) {
@@ -78,7 +107,6 @@
         
         if (ct) {
             if (desc.IsList) {
-                desc.Items = [];
                 addComplexItemToList(desc,ct);
 
             } else {
@@ -176,14 +204,28 @@
             var container = dom.gid('list-container-' + id);
             var desc = descCache[id];
             var item = getComplexType(desc);
-            addComplexItemToList(desc, item);
+            item = addComplexItemToList(desc, item);
             var html = templates['complex-object-list-item'](item);
             dom.html(html, container);
 
         },
 
         complexListRemove: function (el) {
+            var id = el.getAttribute("data-id");
 
+            var container = dom.gid('list-container-' + id);
+            var desc = descCache[id];
+
+            var items = dom.childs(container, 'span');
+
+            if (items.length != desc.Items.length) {
+                throw "complex list UI and model don't match: " + id;
+            }
+
+            if (items.length) {
+                container.removeChild(items.pop());
+                desc.Items.pop();
+            }
 
         },
 
