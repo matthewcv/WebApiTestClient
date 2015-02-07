@@ -40,7 +40,6 @@
         window.apiDescription = apiDescription = data;
         window.descCache = descCache;
 
-        setUpApiDescForUi();
         console.dir(apiDescription);
         dom.el("link", {"href": "/Content/WebApiTestClient/styles.css","rel":"stylesheet","type": "text/css"}, document.head);
         dom.el("script", { "src": "//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js", "type": "text/javascript" }, document.head);
@@ -67,7 +66,12 @@
 
 
     function setUpDictionary(desc) {
-        nextId(desc);
+        if (!desc.IsSimple) {
+            return null;
+        }
+        if (!desc.id) {
+            nextId(desc);
+        }
 
         var item = {
             Key: { TypeName: desc.KeyTypeName },
@@ -82,6 +86,8 @@
         }
 
         desc.Items.push(item);
+
+        return item;
     }
 
     function addComplexItemToList(parent, ct) {
@@ -139,12 +145,16 @@
     //callback from the ajax call that gets the template HTML
     function showUi() {
         configHandlebars();
+        setUpApiDescForUi();
 
         var html = templates['container'](apiDescription);
         dom.html(html, document.body);
 
+        window.scroll(0, document.body.scrollHeight);
 
-        dom.gid('watc-panel').addEventListener("click", clickHandler);
+        var panel = dom.gid('watc-panel');
+        panel.addEventListener("click", clickHandler);
+
     }
 
 
@@ -176,6 +186,13 @@
 
     //commands that respond to various buttons that could be clicked by the user.  functions correspond to data-cmd attribute values in links and buttons in the templates.  
     var commands = {
+        sendRequest: function() {
+            console.log('submit');
+        },
+
+        addHeader: function() {
+
+        },
 
         inputListRemove:function(el) {
             var id = el.getAttribute("data-id");
@@ -230,54 +247,35 @@
         },
 
         dictionaryRemove:function(el) {
-            var theUl = dom.prevSib(el, 'ul');
-            var last = theUl.lastChild;
-            if (last.nodeName.toLowerCase() != 'li') {
-                last = dom.prevSib(last, 'li');
+            var id = el.getAttribute("data-id");
+            var desc = descCache[id];
+            var container = dom.gid('dictionary-' + id);
+            var items = dom.childs(container, 'div');
+
+            if (items.length != desc.Items.length) {
+                throw "complex list UI and model don't match: " + id;
             }
 
-            var prev = dom.prevSib(last, 'li');
-
-            console.dir(prev);
-            if (prev && prev.lastChild.nodeName.toLowerCase() == "#text") {
-                prev.removeChild(prev.lastChild);
+            if (items.length) {
+                container.removeChild(items.pop());
+                desc.Items.pop();
             }
 
-            theUl.removeChild(last);
         },
 
         dictionaryAdd: function (el) {
             var id = el.getAttribute("data-id");
+            var desc = descCache[id];
+            var item = setUpDictionary(desc);
+            var container = dom.gid('dictionary-' + id);
+            var html = templates['dictionary-item'](item);
+            dom.html(html, container);
 
-            console.log(id);
-
-            var typeName = el.getAttribute("data-type-name");
-
-            var type = apiDescription.ComplexTypes.filter(function (t) {
-                return t.Name == typeName;
-            });
-
-            var lis = dom.childs(dom.prevSib(el,'ul'), "li");
-
-            id = id.substring(0, id.lastIndexOf("[")) + "[" + lis.length + "]";
-
-            var context = { id: id, IsSimple: type.length==0, ValueTypeName:typeName }
-            var html = templates['dictionary-type-item'](context).trim();
-
-            var theUl = dom.prevSib(el, 'ul');
-
-            dom.html(html, theUl);
-
-            var prevLi = dom.prevSib(theUl.lastChild, "li");
-            if (prevLi) {
-                prevLi.appendChild(document.createTextNode(","));
-            }
         },
 
         complexObjectSetValue: function (el) {
 
             var id = el.getAttribute("data-id");
-            var typeName = el.getAttribute("data-type-name");
 
 
             var prop = descCache[id];

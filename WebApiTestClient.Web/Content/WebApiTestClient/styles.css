@@ -1,14 +1,15 @@
-﻿.watc-container {
-    
-}
-#watc-panel {
-    position: fixed;
-    bottom: 15px;
-    left: 15px;
-    border: solid 1px burlywood;
+﻿#watc-panel {
     background: whitesmoke;
     padding: 10px;
 }
+
+.watc-container {
+}
+
+.watc-transmission {
+
+}
+
 .watc-activator {
     position: fixed;
     bottom: 0;
@@ -26,10 +27,13 @@
     padding: 0 0 0 15px;
 }
 
+.list-container>span:not(:last-child)::after,
 .property:not(:last-child)::after,
-span.comma:not(:last-child)::after  {
+.input-list>span:not(:last-child)::after  {
     content: ", ";
 }
+
+
 
 #watc-panel li {
     list-style-type: none;
