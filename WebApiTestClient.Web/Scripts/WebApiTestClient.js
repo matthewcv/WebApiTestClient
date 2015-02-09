@@ -3,6 +3,7 @@
     var apiDescription = null;
     var currentId = 0;
     var descCache = {};
+    var templates = {};
 
     function nextId(desc) {
         currentId++;
@@ -40,7 +41,6 @@
         window.apiDescription = apiDescription = data;
         window.descCache = descCache;
 
-        console.dir(apiDescription);
         dom.el("link", {"href": "/Content/WebApiTestClient/styles.css","rel":"stylesheet","type": "text/css"}, document.head);
         dom.el("script", { "src": "//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js", "type": "text/javascript" }, document.head);
         makeActivatorButton();
@@ -48,6 +48,8 @@
 
     //take the metadata and extend the objects a bit to help out with the handlebars templates
     function setUpApiDescForUi() {
+        apiDescription.Headers = [];
+
         apiDescription.QueryParameters.forEach(function(p) {
             nextId(p);
         });
@@ -135,7 +137,6 @@
             ev.preventDefault();
             getTemplate(showUi);
             a.parentNode.removeChild(a);
-            console.log("show the ui");
 
         });
 
@@ -182,16 +183,179 @@
     }
 
 
-    var templates = {};
+    function getSimpleValue(desc) {
+        var input = document.querySelectorAll("input[name=input-" + desc.id + "]");
+
+        var val = [].map.call(input,function (i) {
+            return i.value;
+        });
+        if (desc.TypeName == "System.DateTime") {
+            val = val.map(function(v) {
+                return new Date(v);
+            });
+        }
+        else if (desc.TypeName == "System.Int32") {
+            val = val.map(function (v) {
+                return parseInt(v);
+            });
+        }
+        else if (desc.TypeName == "System.Boolean") {
+            val = val.map(function (v) {
+                return v.toLowerCase() == 'true';
+            });
+        }
+
+        if (desc.IsList) {
+            return val;
+        }
+        return val[0];
+    }
+
+    function getComplexObjectValue(desc) {
+        if (desc.Properties) {
+            var obj = {};
+            desc.Properties.forEach(function(p) {
+                obj[p.Name] = getValue(p);
+            });
+
+            return obj;
+        }
+        return null;
+    }
+
+    function getComplexObjectListValue(desc) {
+        var list = desc.Items.map(function(i) {
+            return getComplexObjectValue(i);
+
+        });
+        return list;
+    }
+
+    function getDictionaryValue(desc) {
+        if (desc.Items && desc.Items.length) {
+            var obj = {};
+            desc.Items.forEach(function(i) {
+                obj[getSimpleValue(i.Key)] = getSimpleValue(i.Value);
+            });
+
+            return obj;
+        }
+        return null;
+    }
+
+
+    function getValue(desc) {
+        if (desc.IsDictionary) {
+            return getDictionaryValue(desc);
+        } else if (desc.IsSimple) {
+                return getSimpleValue(desc);
+        }else if (desc.IsList) {
+            return getComplexObjectListValue(desc);
+
+        } else {
+            return getComplexObjectValue(desc);
+        }
+    }
+
+    function buildUrl() {
+        var url = apiDescription.Route;
+
+        apiDescription.RouteParameters.forEach(function (p) {
+            var v = getValue(p);
+            
+            url = url.replace("{" + p.Name + "}", v);
+        });
+
+        apiDescription.QueryParameters.forEach(function(p,i) {
+            if (i == 0) {
+                url = url + "?";
+            } else {
+                url = url + '&';
+            }
+            var v = getValue(p);
+            if (p.IsList) {
+                v.forEach(function (vi, vii) {
+                    if (vii > 0) {
+                        url = url + "&";
+                    }
+                    url = url + p.Name + "[" + vii + "]=" + encodeURIComponent(vi);
+                });
+            } else {
+                url = url + p.Name + "=" + encodeURIComponent(v);
+            }
+
+        });
+
+        return "/" + url;
+    }
+
+    function setHeaders(xhr) {
+        apiDescription.Headers.forEach(function(h) {
+            xhr.setRequestHeader(getSimpleValue(h.Name), getSimpleValue(h.Value));
+        });
+
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("Accept", "application/json");
+    }
+
+    function getBody() {
+        if (apiDescription.BodyParameter) {
+            var b = getValue(apiDescription.BodyParameter);;
+            return JSON.stringify(b);
+        }
+    }
+
 
     //commands that respond to various buttons that could be clicked by the user.  functions correspond to data-cmd attribute values in links and buttons in the templates.  
     var commands = {
         sendRequest: function() {
-            console.log('submit');
+
+            var xhr = new XMLHttpRequest();
+            xhr.addEventListener("load", function() {
+                var data = JSON.parse(xhr.response);
+
+                
+
+                dom.text('response-data', JSON.stringify(data, null, 5), true);
+
+            });
+            xhr.open(apiDescription.Method, buildUrl());
+
+            setHeaders(xhr);
+
+            xhr.send(getBody());
+
         },
 
-        addHeader: function() {
+        headerAdd: function () {
+            var container = dom.gid('headers-container');
 
+            var item = {
+                Name: { TypeName: "System.String" },
+                Value: {TypeName: "System.String" }
+            }
+            nextId(item);
+            nextId(item.Name);
+            nextId(item.Value);
+            apiDescription.Headers.push(item);
+
+            var html = templates['header-item'](item);
+            dom.html(html, container);
+        },
+
+        headerRemove:function(el) {
+            var id = el.getAttribute("data-id");
+            var elem = dom.gid('header-' + id);
+
+            elem.parentNode.removeChild(elem);
+
+            apiDescription.Headers.every(function(h, i) {
+                if (h.id == id) {
+                    apiDescription.Headers.splice(i, 1);
+                    return false;
+                }
+                return true;
+            });
         },
 
         inputListRemove:function(el) {
@@ -303,9 +467,16 @@
             return document.getElementById(id);
         },
 
-        //add text to an element
-        text: function (el, text) {
-            el = typeof(el) == "string" ? this.gid(el) : el;
+        //add text to an element or replace the contents of the node with text
+        text: function (el, text, repl) {
+            el = typeof (el) == "string" ? this.gid(el) : el;
+
+            if (repl) {
+                while (el.lastChild) {
+                    el.removeChild(el.lastChild);
+                }
+            }
+
             el.appendChild(document.createTextNode(text));
         },
 
@@ -335,16 +506,7 @@
                 }
             }
         },
-        //get the previous sibling of a node that is a specific node name
-        prevSib:function(node, nodeName) {
 
-            var found = node.previousSibling;
-            while (found != null && found.nodeName.toLowerCase() != nodeName) {
-                found = found.previousSibling;
-            }
-            return found;
-
-        },
 
         //get the child nodes of a node or optionally by a specific node name
         childs: function (node, nodeName) {
