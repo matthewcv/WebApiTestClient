@@ -10,12 +10,12 @@ How to use:
 1. Install the WebApiTestClient NuGet package into your Web API Project.
 2. If it's not already there, install the Microsoft.AspNet.WebApi.HelpPage NuGet Package.
 3. In your web app under /Ares/HelpPage/Views/Help there should be a view called Api.cshtml.  Add this code to the bottom of that file:
+
 	@section scripts
 	{
-   
-		<script type="text/javascript" src="/Scripts/WebApiTestClient.js"></script>
-
+   		<script type="text/javascript" src="/Scripts/WebApiTestClient.js"></script>
 	}
+	
 4. in your web.config at <configuration>/<system.webServer>/<handlers> add the following node:
       <add name="WebApiTestClient" path="WebApiTestClient.axd" verb="GET" type="WebApiTestClient.HttpHandler, WebApiTestClient" />
 5. Browse to one of the generated Help pages for an API.  The WebApiTestClient will initialize automatically and after a moment you will see a "Test this API" link at the bottom rigt of the window
