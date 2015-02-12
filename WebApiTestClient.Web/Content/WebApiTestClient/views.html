@@ -1,8 +1,8 @@
 ﻿<script type="text/html" id="tpl-watc-container">
     <div id="watc-panel">
-
+        
         <div class="watc-container">
-            <div class="api-title"><span id="watc-method">{{Method}}</span> <span id="watc-route">{{Route}}</span></div>
+            <div class="watc-api-title"><span id="watc-method">{{Method}}</span> <span id="watc-route">{{Origin}}/{{Route}}</span></div>
             <a href="#header" data-cmd="headerAdd">add header</a>
             <div id="headers-container"></div>
             {{#if RouteParameters.length}}
@@ -17,16 +17,15 @@
 
             {{#if BodyParameter}}
             <div>Body ({{#if BodyParameter.IsDictionary}}{ {{BodyParameter.KeyTypeName}} : {{BodyParameter.ValueTypeName}} } {{else}}{{BodyParameter.TypeName}}{{#if BodyParameter.IsList}}[]{{/if}}{{/if}}): </div>
-            <div class="api-body">
+            <div class="watc-api-body">
                 {{> any-type BodyParameter}}
             </div>
             {{/if}}
         </div>
         <div class="watc-transmission">
             <div><button data-cmd="sendRequest">send request</button></div>
-            <div class="response">
+            <div class="watc-response">
                 <pre id="response-data">
-
 </pre>
             </div>
         </div>
@@ -51,8 +50,8 @@
 </script>
 
 <script type="text/html" id="tpl-watc-header-item">
-    <div class="header" id="header-{{id}}">
-        {{> simple-input Name}} : {{> simple-input Value}} <a href="#remove" data-cmd="headerRemove" data-id="{{id}}">-</a>
+    <div class="watc-header" id="header-{{id}}">
+        {{> simple-input Name}} : {{> simple-input Value}} <a href="#remove" title="remove an item" data-cmd="headerRemove" data-id="{{id}}">-</a>
     </div>
 
 </script>
@@ -60,18 +59,18 @@
 
 <script type="text/html" id="tpl-watc-any-dictionary-type">
     <span>{</span>
-    <div class="properties" id="dictionary-{{id}}">
+    <div class="watc-properties" id="dictionary-{{id}}">
         {{#each Items}}
         {{> dictionary-item}}
         {{/each}}
     </div>
-    <a href="#less" data-cmd="dictionaryRemove" data-id="{{id}}">-</a>
-    <a href="#more" data-cmd="dictionaryAdd" data-id="{{id}}">+</a>
+    <a href="#less" title="remove an item" data-cmd="dictionaryRemove" data-id="{{id}}">-</a>
+    <a href="#more" title="add an item" data-cmd="dictionaryAdd" data-id="{{id}}">+</a>
     <span>}</span>
 </script>
 
 <script type="text/html" id="tpl-watc-dictionary-item">
-    <div class="property">
+    <div class="watc-property">
         {{> simple-input Key}} : {{> simple-input Value}}
     </div>
 
@@ -88,14 +87,14 @@
     
 </script>
     <script type="text/html" id="tpl-watc-complex-object-list">
-        <span class="list-container" id="list-container-{{id}}">
+        <span class="watc-list-container" id="list-container-{{id}}">
             {{#each Items}}
             {{> complex-object-list-item}}
             {{/each}}
         </span>
 
-        <a href="#less" data-cmd="complexListRemove" data-id="{{id}}">-</a>
-        <a href="#more" data-cmd="complexListAdd" data-id="{{id}}">+</a>
+        <a href="#less" title="remove an item" data-cmd="complexListRemove" data-id="{{id}}">-</a>
+        <a href="#more" title="add an item" data-cmd="complexListAdd" data-id="{{id}}">+</a>
 
     </script>
 
@@ -108,7 +107,7 @@
     <script type="text/html" id="tpl-watc-complex-object">
         <span>{</span>
         {{#if Properties}}
-        <div class="properties">
+        <div class="watc-properties">
             {{#each Properties}}
             {{> named-property}}
             {{/each}}
@@ -121,8 +120,8 @@
     </script>
 
     <script type="text/html" id="tpl-watc-named-property">
-        <div class="property" id="property-{{id}}">
-            <span class="label">{{Name}} ({{#if IsDictionary}}{ {{KeyTypeName}} : {{ValueTypeName}} }{{else}} {{TypeName}}{{#if IsList}}[]{{/if}}{{/if}}): </span>
+        <div class="watc-property" id="property-{{id}}">
+            <span class="watc-label">{{Name}} ({{#if IsDictionary}}{ {{KeyTypeName}} : {{ValueTypeName}} }{{else}}{{TypeName}}{{#if IsList}}[]{{/if}}{{/if}}): </span>
             {{> any-type}}
         </div>
     </script>
@@ -160,10 +159,10 @@
 
 
     <script type="text/html" id="tpl-watc-input-list">
-        <span class="input-list" id="input-list-{{id}}">
+        <span class="watc-input-list" id="input-list-{{id}}">
             {{> simple-input}}
             {{> simple-input}}
         </span>
-        <a href="#less" data-cmd="inputListRemove" data-id="{{id}}">-</a>
-        <a href="#more" data-cmd="inputListAdd" data-id="{{id}}">+</a>
+        <a href="#less" title="remove an item" data-cmd="inputListRemove" data-id="{{id}}">-</a>
+        <a href="#more" title="add an item" data-cmd="inputListAdd" data-id="{{id}}">+</a>
     </script>

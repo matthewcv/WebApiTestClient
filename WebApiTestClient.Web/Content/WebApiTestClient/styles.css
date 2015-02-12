@@ -4,10 +4,25 @@
 }
 
 .watc-container {
+    font-family: monospace;
 }
 
 .watc-transmission {
 
+}
+
+.watc-container input {
+    border: solid 1px #696969;
+    font-family: monospace;
+    padding: 3px;
+}
+
+a[data-cmd] {
+    text-decoration: none;
+    border: solid 1px #4848FF;
+    color: #4848FF;
+    display: inline-block;
+    padding: 0 3px;
 }
 
 .watc-activator {
@@ -23,13 +38,13 @@
 }
 
 
-.properties {
+.watc-properties {
     padding: 0 0 0 15px;
 }
 
-.list-container>span:not(:last-child)::after,
-.property:not(:last-child)::after,
-.input-list>span:not(:last-child)::after  {
+.watc-list-container>span:not(:last-child)::after,
+.watc-property:not(:last-child)::after,
+.watc-input-list>span:not(:last-child)::after  {
     content: ", ";
 }
 

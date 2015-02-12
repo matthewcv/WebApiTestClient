@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Routing;
 using Newtonsoft.Json;
 
 namespace WebApiTestClient
 {
-    public class HttpHandler:IHttpHandler
+    public class HttpHandler:IHttpHandler, IRouteHandler
     {
 
         public void ProcessRequest(HttpContext context)
@@ -40,5 +41,15 @@ namespace WebApiTestClient
         }
 
         public bool IsReusable { get { return false; } }
+
+        public IHttpHandler GetHttpHandler(RequestContext requestContext)
+        {
+            return new HttpHandler();
+        }
+
+        public static RouteBase GetRoute()
+        {
+            return new Route("_WebApiTestClient", new HttpHandler());
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -35,6 +36,19 @@ namespace WebApiTestClient.Web.Controllers
         {
             return query;
         }
+
+        [HttpGet, Route("ObjectParameterWithSimpleListInQuery")]
+        public ClassWithStringListParameter ObjectParameterWithSimpleListInQuery([FromUri]ClassWithStringListParameter query)
+        {
+            return query;
+        }
+
+        [HttpPost, Route("ObjectParameterWithAllTheSimpleTypes")]
+        public ClassWithAllTheSimpleTypes ObjectParameterWithAllTheSimpleTypes(ClassWithAllTheSimpleTypes param)
+        {
+            return param;
+        }
+
 
         [HttpPost, Route("ObjectParameterWithSimpleProperties")]
         public ClassWithSimpleProperties ObjectParameterWithSimpleProperties(ClassWithSimpleProperties param)
@@ -143,6 +157,20 @@ namespace WebApiTestClient.Web.Controllers
         public List<ClassWithSimpleProperties> Somethings { get; set; }
     }
 
+    public class ClassWithAllTheSimpleTypes
+    {
+        public string String { get; set; }
+        public DateTime DateTime { get; set; }
+        public DateTimeOffset DateTimeOffset { get; set; }
+        public TimeSpan TimeSpan { get; set; }
+        public int Int { get; set; }
+        public decimal Decimal { get; set; }
+        public double Double { get; set; }
+        public float Float { get; set; }
+        public short Short { get; set; }
+        public long Long { get; set; }
+        public bool Boolean { get; set; }
+    }
     
 
     public class ClassWithSimpleProperties

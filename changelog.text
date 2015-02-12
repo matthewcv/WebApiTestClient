@@ -1,0 +1,10 @@
+1.0.3 -
+Making the UI a little nicer
+Handling more data types
+
+
+1.0.2 - 
+removed the web.config entry and instead it is registered as a route.
+
+
+1.0.1 - initial release

@@ -16,7 +16,7 @@ How to use:
    		<script type="text/javascript" src="/Scripts/WebApiTestClient.js"></script>
 	}
    ```	
-4. in your web.config at ```<configuration>/<system.webServer>/<handlers>``` add the following node: ```<add name="WebApiTestClient" path="WebApiTestClient.axd" verb="GET" type="WebApiTestClient.HttpHandler, WebApiTestClient" />```
+4. Register the route.  In your Global.asax or where ever you register your routes add this line: ```RouteTable.Routes.Add("webapitestclient",WebApiTestClient.HttpHandler.GetRoute());```.  This route must be registered first before any other routes.
 5. Browse to one of the generated Help pages for an API.  The WebApiTestClient will initialize automatically and after a moment you will see a "Test this API" link at the bottom rigt of the window
 	if you click it, a UI will be generated that matches the inputs for that API.  Fill them in and click the 'send request' button.
 

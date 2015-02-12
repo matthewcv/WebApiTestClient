@@ -173,7 +173,7 @@ namespace WebApiTestClient
         {
             var t = Nullable.GetUnderlyingType(typeToCheck) ?? typeToCheck;
 
-            return t.IsPrimitive || t == typeof(string) || t == typeof(DateTime) || t == typeof(TimeSpan) || t == typeof(decimal);
+            return t.IsPrimitive || t == typeof(string) || t == typeof(DateTime) || t == typeof(TimeSpan) || t == typeof(DateTimeOffset) || t == typeof(decimal);
 
         }
 

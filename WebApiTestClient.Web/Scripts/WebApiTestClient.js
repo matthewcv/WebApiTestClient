@@ -11,7 +11,7 @@
         desc.id = currentId.toString();
         descCache[desc.id] = desc;
     }
-
+    
     function getComplexType(desc) {
         var typeName = desc.TypeName || desc.ValueTypeName;
 
@@ -33,7 +33,7 @@
     var apiId = window.location.pathname.split('/').pop();
 
     //go get the meta data for this API
-    getJson("/WebApiTestClient.axd?ApiName=" + apiId, getReadyToUseTestClient);
+    getJson("/_WebApiTestClient?ApiName=" + apiId, getReadyToUseTestClient);
 
 
     //callback from getting meta data.
@@ -49,7 +49,7 @@
     //take the metadata and extend the objects a bit to help out with the handlebars templates
     function setUpApiDescForUi() {
         apiDescription.Headers = [];
-
+        apiDescription.Origin = window.location.origin;
         apiDescription.QueryParameters.forEach(function(p) {
             nextId(p);
         });
@@ -189,14 +189,19 @@
         var val = [].map.call(input,function (i) {
             return i.value;
         });
-        if (desc.TypeName == "System.DateTime") {
+        if (desc.TypeName == "System.DateTime" || desc.TypeName == "System.DateTimeOffset") {
             val = val.map(function(v) {
                 return new Date(v);
             });
         }
-        else if (desc.TypeName == "System.Int32") {
+        else if (desc.TypeName == "System.Int32" || desc.TypeName == "System.Int16" || desc.TypeName == "System.Int64") {
             val = val.map(function (v) {
                 return parseInt(v);
+            });
+        }
+        else if (desc.TypeName == "System.Decimal" || desc.TypeName == "System.Double" || desc.TypeName == "System.Single") {
+            val = val.map(function (v) {
+                return parseFloat(v);
             });
         }
         else if (desc.TypeName == "System.Boolean") {
