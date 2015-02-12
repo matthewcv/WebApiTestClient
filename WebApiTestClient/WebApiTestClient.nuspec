@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>matthewcv.WebApiTestClient</id>
+    <version>$version$</version>
+    <title>Web API Test Client</title>
+    <authors>matthewcv</authors>
+    <owners>matthewcv</owners>
+    <projectUrl>https://github.com/matthewcv/WebApiTestClient</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Automatically generate a UI to test your ASP.Net Web API.  The UI is based on the description of your API and the ressources it exposes.  You get neat input elements instead of having to manually type all that JSON or XML.</description>
+    <releaseNotes>this is the initial release</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>WebAPI Test</tags>
+        <frameworkAssemblies>
+            <frameworkAssembly assemblyName="System.Web"  />
+        </frameworkAssemblies>
+  </metadata>
+  <files>
+  	<file src="..\WebApiTestClient.Web\Content\WebApiTestClient\*.*" target="Content\WebApiTestClient" />
+  	<file src="..\WebApiTestClient.Web\Scripts\WebApiTestClient.js" target="Scripts" />
+  </files>
+</package>

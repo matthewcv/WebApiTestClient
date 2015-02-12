@@ -1,0 +1,8 @@
+--build the nuget package
+
+ ../.nuget/nuget pack
+
+
+ --publish the nuget package
+
+  ../.nuget/nuget publish WebApiTestClient.1.0.0.0.nupkg 
