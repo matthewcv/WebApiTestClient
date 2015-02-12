@@ -273,8 +273,15 @@
                 url = url + '&';
             }
             var v = getValue(p);
+            if (v && v.toISOString) {
+                v = v.toISOString();
+            }
             if (p.IsList) {
                 v.forEach(function (vi, vii) {
+                    if (vi && vi.toISOString) {
+                        vi = vi.toISOString();
+                    }
+
                     if (vii > 0) {
                         url = url + "&";
                     }
@@ -311,12 +318,19 @@
         sendRequest: function() {
 
             var xhr = new XMLHttpRequest();
-            xhr.addEventListener("load", function() {
-                var data = JSON.parse(xhr.response);
+            xhr.addEventListener("load", function () {
+                var formattedResponse = xhr.status + " - " + xhr.statusText + "\n";
+                formattedResponse += xhr.getAllResponseHeaders() + "\n";
 
-                
+                try {
+                    var data = JSON.parse(xhr.response);
+                    formattedResponse += JSON.stringify(data, null, 5);
+                } catch (e) {
+                    formattedResponse += xhr.response;
+                }
 
-                dom.text('response-data', JSON.stringify(data, null, 5), true);
+
+                dom.text('response-data', formattedResponse, true);
 
             });
             xhr.open(apiDescription.Method, buildUrl());

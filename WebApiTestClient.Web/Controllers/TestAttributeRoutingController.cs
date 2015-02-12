@@ -10,6 +10,8 @@ namespace WebApiTestClient.Web.Controllers
     [RoutePrefix("TestAttributeRouting")]
     public class TestAttributeRoutingController : ApiController
     {
+
+
         [HttpGet, Route("StringListInQuery")]
         public List<string> StringListInQuery([FromUri]List<string> things)
         {
@@ -28,6 +30,11 @@ namespace WebApiTestClient.Web.Controllers
             return whatever + ", " + another;
         }
 
+        [HttpGet, Route("ObjectParameterInQuery")]
+        public ClassWithSimpleProperties ObjectParameterInQuery([FromUri]ClassWithSimpleProperties query)
+        {
+            return query;
+        }
 
         [HttpPost, Route("ObjectParameterWithSimpleProperties")]
         public ClassWithSimpleProperties ObjectParameterWithSimpleProperties(ClassWithSimpleProperties param)

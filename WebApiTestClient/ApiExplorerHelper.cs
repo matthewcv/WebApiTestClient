@@ -30,22 +30,29 @@ namespace WebApiTestClient
             IApiExplorer apiExplorer = System.Web.Http.GlobalConfiguration.Configuration.Services.GetApiExplorer();
             ApiDescription desc = apiExplorer.ApiDescriptions.FirstOrDefault(a => a.GetFriendlyId() == name);
 
-            return GetApiINfo(desc);
+            return GetApiInfo(desc);
         }
 
 
-        private static ApiInfo GetApiINfo(ApiDescription desc)
+        private static ApiInfo GetApiInfo(ApiDescription desc)
         {
             var api = new ApiInfo() { Name = desc.GetFriendlyId() };
 
 
             api.Method = desc.HttpMethod.Method;
-            api.Route = desc.Route.RouteTemplate;
+            api.Route = GetRoute(desc);
             api.RouteParameters = GetRouteParameters(desc);
             api.QueryParameters = GetQueryParameters(desc);
             api.BodyParameter = GetBodyParameter(desc);
             api.ComplexTypes = GetComplexTypes(api.BodyParameter);
             return api;
+        }
+
+        private static string GetRoute(ApiDescription desc)
+        {
+            var idx = desc.RelativePath.IndexOf('?');
+            var length = idx < 0 ? desc.RelativePath.Length : idx;
+            return desc.RelativePath.Substring(0, length);
         }
 
         private static List<ComplexType> GetComplexTypes(ApiParameter param)
@@ -95,12 +102,27 @@ namespace WebApiTestClient
 
         private static List<ApiParameter> GetQueryParameters(ApiDescription desc)
         {
-
-            return desc.ParameterDescriptions.Where(d => d.Source == ApiParameterSource.FromUri &&
+            List<ApiParameter> apiParameters = new List<ApiParameter>();
+            foreach (ApiParameterDescription apd in desc.ParameterDescriptions.Where(d => d.Source == ApiParameterSource.FromUri &&
                                                   desc.Route.RouteTemplate.IndexOf("{" + d.Name + "}",
-                                                      StringComparison.InvariantCultureIgnoreCase) < 0)
-                .Select(MakeParameter).ToList();
-            
+                                                      StringComparison.InvariantCultureIgnoreCase) < 0))
+            {
+                ApiParameter ap = MakeParameter(apd);
+                if (ap.IsSimple)
+                {
+                    apiParameters.Add(ap);
+                }
+                else
+                {
+                    ComplexType ct = GetComplexTypes(ap).First();
+                    apiParameters.AddRange(ct.Properties);
+                }
+
+            }
+
+
+
+            return apiParameters;
         }
         private static ApiParameter GetBodyParameter(ApiDescription desc)
         {
