@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>matthewcv.WebApiTestClient</id>
-    <version>$version$</version>
+    <version>1.0.1</version>
     <title>Web API Test Client</title>
     <authors>matthewcv</authors>
     <owners>matthewcv</owners>
@@ -17,7 +17,7 @@
         </frameworkAssemblies>
   </metadata>
   <files>
-  	<file src="..\WebApiTestClient.Web\Content\WebApiTestClient\*.*" target="Content\WebApiTestClient" />
-  	<file src="..\WebApiTestClient.Web\Scripts\WebApiTestClient.js" target="Scripts" />
+  	<file src="..\WebApiTestClient.Web\Content\WebApiTestClient\*.*" target="Content\Content\WebApiTestClient" />
+  	<file src="..\WebApiTestClient.Web\Scripts\WebApiTestClient.js" target="Content\Scripts" />
   </files>
 </package>
