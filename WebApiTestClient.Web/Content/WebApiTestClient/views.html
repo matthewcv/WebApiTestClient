@@ -4,7 +4,11 @@
         <div class="watc-container">
             <div class="watc-api-title"><span id="watc-method">{{Method}}</span> <span id="watc-route">{{Origin}}/{{Route}}</span></div>
             <a href="#header" data-cmd="headerAdd">add header</a>
-            <div id="headers-container"></div>
+            <div id="headers-container">
+                {{#each Headers}}
+                {{> header-item}}
+                {{/each}}
+            </div>
             {{#if RouteParameters.length}}
             <div>Route Params: </div>
             {{> url-input-list RouteParameters}}
@@ -140,7 +144,7 @@
     </script>
 
     <script type="text/html" id="tpl-watc-simple-input">
-        <span ><input type="text" name="input-{{id}}" /></span>
+        <span ><input type="text" name="input-{{id}}" value="{{Value}}" /></span>
     </script>
 
     <script type="text/html" id="tpl-watc-labeled-input">

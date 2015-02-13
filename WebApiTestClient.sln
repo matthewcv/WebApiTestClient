@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiTestClient.Web", "WebApiTestClient.Web\WebApiTestClient.Web.csproj", "{2B12520C-1C00-4E44-B82B-5C2149E579B0}"
 EndProject
@@ -16,7 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{0C178F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6A15F943-0C14-46E0-A519-6252C6B5D4BD}"
 	ProjectSection(SolutionItems) = preProject
-		changelog.text = changelog.text
 		readme.md = readme.md
 	EndProjectSection
 EndProject

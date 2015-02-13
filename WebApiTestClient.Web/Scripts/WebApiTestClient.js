@@ -64,6 +64,34 @@
                 setUpProperties(apiDescription.BodyParameter);
             }
         }
+
+        getInitialDataFromStorage();
+
+    }
+
+    function getInitialDataFromStorage() {
+        var headers = storage.get(storage.names.headers);
+
+        if (headers) {
+            headers.forEach(function(h) {
+                var item = makeHeaderItem();
+                item.Name.Value = h.Name;
+                item.Value.Value = h.Value;
+            });
+        }
+    }
+
+    function makeHeaderItem() {
+        var item = {
+            Name: { TypeName: "System.String" },
+            Value: { TypeName: "System.String" }
+        }
+        nextId(item);
+        nextId(item.Name);
+        nextId(item.Value);
+        apiDescription.Headers.push(item);
+
+        return item;
     }
 
 
@@ -262,6 +290,34 @@
         }
     }
 
+    var storage = {
+        set: function(name, value) {
+            if (localStorage) {
+                localStorage.setItem(apiDescription.Name + "::" + name, JSON.stringify(value));
+            }
+        },
+        get: function (name) {
+            var item = null;
+            if (localStorage) {
+                item = localStorage.getItem(apiDescription.Name + "::" + name);
+                if (item) {
+                    try {
+                        item = JSON.parse(item);
+                    } catch (e) {
+                        
+                    }
+                }
+            }
+            return item;
+        },
+        names: {
+            headers:"headers"
+        }
+    }
+    
+
+
+
     function buildUrl() {
         var url = apiDescription.Route;
 
@@ -302,9 +358,17 @@
     }
 
     function setHeaders(xhr) {
-        apiDescription.Headers.forEach(function(h) {
-            xhr.setRequestHeader(getSimpleValue(h.Name), getSimpleValue(h.Value));
+        var headers = [];
+        apiDescription.Headers.forEach(function (h) {
+            h = {
+                Name : getSimpleValue(h.Name),
+                Value:getSimpleValue(h.Value)
+            }
+            headers.push(h);
+            xhr.setRequestHeader(h.Name,h.Value );
         });
+
+        storage.set(storage.names.headers, headers);
 
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.setRequestHeader("Accept", "application/json");
@@ -349,14 +413,7 @@
         headerAdd: function () {
             var container = dom.gid('headers-container');
 
-            var item = {
-                Name: { TypeName: "System.String" },
-                Value: {TypeName: "System.String" }
-            }
-            nextId(item);
-            nextId(item.Name);
-            nextId(item.Value);
-            apiDescription.Headers.push(item);
+            var item = makeHeaderItem();
 
             var html = templates['header-item'](item);
             dom.html(html, container);

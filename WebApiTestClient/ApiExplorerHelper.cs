@@ -144,6 +144,7 @@ namespace WebApiTestClient
         private static ApiParameter MakeParameter(Type type)
         {
             Type actualType = type.ListedType() ?? type.DictionariedType() ?? type;
+            actualType = Nullable.GetUnderlyingType(actualType) ?? actualType;
             _typeCache[actualType.FullName] = actualType;
             var p = new ApiParameter()
             {

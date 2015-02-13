@@ -49,7 +49,7 @@ namespace WebApiTestClient
 
         public static RouteBase GetRoute()
         {
-            return new Route("_WebApiTestClient", new HttpHandler());
+            return new Route("_WebApiTestClient",new RouteValueDictionary(new{controller="", action=""}), new HttpHandler());
         }
     }
 }

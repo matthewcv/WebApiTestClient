@@ -13,11 +13,11 @@ namespace WebApiTestClient.Web
     {
         protected void Application_Start()
         {
-            RouteTable.Routes.Add("webapitestclient",WebApiTestClient.HttpHandler.GetRoute());
-
             AreaRegistration.RegisterAllAreas();
+
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            RouteTable.Routes.Add("webapitestclient",WebApiTestClient.HttpHandler.GetRoute());
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 

@@ -43,6 +43,18 @@ namespace WebApiTestClient.Web.Controllers
             return query;
         }
 
+        [HttpGet, Route("NullablesInUri")]
+        public string NullablesInUri(int? nullint, bool? nullbool)
+        {
+            return nullint + ",  " + nullbool;
+        }
+
+        [HttpPost, Route("ObjectParameterWithNullables")]
+        public ClassWithNullables ObjectParameterWithNullables(ClassWithNullables param)
+        {
+            return param;
+        }
+
         [HttpPost, Route("ObjectParameterWithAllTheSimpleTypes")]
         public ClassWithAllTheSimpleTypes ObjectParameterWithAllTheSimpleTypes(ClassWithAllTheSimpleTypes param)
         {
@@ -171,8 +183,13 @@ namespace WebApiTestClient.Web.Controllers
         public long Long { get; set; }
         public bool Boolean { get; set; }
     }
-    
 
+    public class ClassWithNullables
+    {
+        public int? NullInt { get; set; }
+
+        public DateTime? NullDate { get; set; }
+    }
     public class ClassWithSimpleProperties
     {
         public string Blah { get; set; }
