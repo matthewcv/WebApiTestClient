@@ -1,3 +1,7 @@
+1.0.7 -
+IDing header items separately from the others so that the elements are named more predictably
+
+
 1.0.6 - 
 better handling of date, number, bool types when creating the api request
 fixed an issue where it wasn't checking for the existance of a property

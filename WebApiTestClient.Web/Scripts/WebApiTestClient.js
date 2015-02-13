@@ -2,13 +2,19 @@
 
     var apiDescription = null;
     var currentId = 0;
+    var currentHeaderId = 0;
     var descCache = {};
     var templates = {};
 
-    function nextId(desc) {
-        currentId++;
+    function nextId(desc, isHeader) {
+        if (isHeader) {
+            currentHeaderId++;
+        } else {
+            currentId++;
+        }
 
-        desc.id = currentId.toString();
+
+        desc.id = (isHeader? "h-" + currentHeaderId : currentId.toString());
         descCache[desc.id] = desc;
     }
     
@@ -86,9 +92,9 @@
             Name: { TypeName: "System.String" },
             Value: { TypeName: "System.String" }
         }
-        nextId(item);
-        nextId(item.Name);
-        nextId(item.Value);
+        nextId(item,true);
+        nextId(item.Name, true);
+        nextId(item.Value, true);
         apiDescription.Headers.push(item);
 
         return item;
