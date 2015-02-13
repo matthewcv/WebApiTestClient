@@ -1,3 +1,7 @@
+1.0.6 - 
+better handling of date, number, bool types when creating the api request
+fixed an issue where it wasn't checking for the existance of a property
+
 1.0.5 - 
 the nuget package was screwed up.  Had to fix it. 
 

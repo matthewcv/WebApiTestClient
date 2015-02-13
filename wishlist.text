@@ -1,0 +1,2 @@
+* Keep a history of stuff that you enter (headers, resources, etc) and be able to re-use those items in other requests without having to re-type everything
+* explicitly set properties to null or blank or exclude them from the response

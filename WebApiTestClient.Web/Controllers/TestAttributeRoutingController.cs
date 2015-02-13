@@ -19,10 +19,22 @@ namespace WebApiTestClient.Web.Controllers
             return things;
         }
 
+        [HttpGet, Route("IntListInQuery")]
+        public List<int> IntListInQuery([FromUri]List<int> things)
+        {
+            return things;
+        }
+
         [HttpGet, Route("StringInQuery")]
         public string StringsInQuery([FromUri]string thing, string anotherThing)
         {
             return thing + ", " + anotherThing;
+        }
+
+        [HttpGet, Route("DatesInQuery")]
+        public string DatesInQuery(DateTime begin, DateTime? end)
+        {
+            return begin + ", " + end;
         }
 
         [HttpGet, Route("StringsInPath/{whatever}/{another}")]

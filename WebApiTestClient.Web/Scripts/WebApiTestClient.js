@@ -224,17 +224,28 @@
         }
         else if (desc.TypeName == "System.Int32" || desc.TypeName == "System.Int16" || desc.TypeName == "System.Int64") {
             val = val.map(function (v) {
-                return parseInt(v);
+                v = parseInt(v);
+                if (isNaN(v)) {
+                    return null;
+                }
+                return v;
             });
         }
         else if (desc.TypeName == "System.Decimal" || desc.TypeName == "System.Double" || desc.TypeName == "System.Single") {
             val = val.map(function (v) {
-                return parseFloat(v);
+                v = parseFloat(v);
+                if (isNaN(v)) {
+                    return null;
+                }
+                return v;
             });
         }
         else if (desc.TypeName == "System.Boolean") {
             val = val.map(function (v) {
-                return v.toLowerCase() == 'true';
+                v = v.toLowerCase();
+                if (v == 'true') return true;
+                if (v == 'false') return false;
+                return null;
             });
         }
 
@@ -257,11 +268,14 @@
     }
 
     function getComplexObjectListValue(desc) {
-        var list = desc.Items.map(function(i) {
-            return getComplexObjectValue(i);
+        if (desc.Items) {
+            var list = desc.Items.map(function(i) {
+                return getComplexObjectValue(i);
 
-        });
-        return list;
+            });
+            return list;
+        }
+        return [];
     }
 
     function getDictionaryValue(desc) {
@@ -316,6 +330,16 @@
     }
     
 
+    function dateAsStringOrSelf(d) {
+        if (d && d.toISOString) {
+            try {
+                return d.toISOString();
+            } catch (e) {
+                return "";
+            }
+        }
+        return d;
+    }
 
 
     function buildUrl() {
@@ -333,16 +357,12 @@
             } else {
                 url = url + '&';
             }
-            var v = getValue(p);
-            if (v && v.toISOString) {
-                v = v.toISOString();
-            }
+            var v = dateAsStringOrSelf( getValue(p));
+            v = v || "";
             if (p.IsList) {
                 v.forEach(function (vi, vii) {
-                    if (vi && vi.toISOString) {
-                        vi = vi.toISOString();
-                    }
-
+                    vi = dateAsStringOrSelf(vi);
+                    vi = vi || "";
                     if (vii > 0) {
                         url = url + "&";
                     }
