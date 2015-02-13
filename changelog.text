@@ -1,3 +1,6 @@
+1.0.5 - 
+the nuget package was screwed up.  Had to fix it. 
+
 1.0.4 -
 Handling nullable types
 Whenever you submit a request to an API, it will store any HTTP headers you included with the request.  
