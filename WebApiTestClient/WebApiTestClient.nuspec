@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>matthewcv.WebApiTestClient</id>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
     <title>Web API Test Client</title>
     <authors>matthewcv</authors>
     <owners>matthewcv</owners>
@@ -12,9 +12,9 @@
     <releaseNotes>see changelog.text</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>WebAPI Test</tags>
-        <frameworkAssemblies>
-            <frameworkAssembly assemblyName="System.Web"  />
-        </frameworkAssemblies>
+    <dependencies>
+      <dependency id="Microsoft.AspNet.WebApi.WebHost" version="5.0" />
+    </dependencies>
   </metadata>
   <files>
     <file src="..\WebApiTestClient.Web\Content\WebApiTestClient.styles.css" target="Content\Content" />
