@@ -15,9 +15,10 @@ namespace WebApiTestClient.Web
         {
             AreaRegistration.RegisterAllAreas();
 
+            WebApiTestClient.WebApiTestClientHttpMessageHandler.RegisterRouteForTestClient(GlobalConfiguration.Configuration);
+
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteTable.Routes.Add("webapitestclient",WebApiTestClient.HttpHandler.GetRoute());
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 

@@ -45,7 +45,6 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web" />
     <Reference Include="System.Web.Http">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
       <Private>True</Private>
@@ -66,7 +65,7 @@
     <Compile Include="ApiNamesInfo.cs" />
     <Compile Include="ApiParameter.cs" />
     <Compile Include="ComplexType.cs" />
-    <Compile Include="HttpHandler.cs" />
+    <Compile Include="WebApiTestClientHttpMessageHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

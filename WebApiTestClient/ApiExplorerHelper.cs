@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -234,8 +235,7 @@ namespace WebApiTestClient
             string queryKeyString = null;
             if (urlParts.Length > 1)
             {
-                string query = urlParts[1];
-                string[] queryKeys = HttpUtility.ParseQueryString(query).AllKeys;
+                string[] queryKeys = GetQueryKeys(path);
                 queryKeyString = String.Join("_", queryKeys);
             }
 
@@ -248,6 +248,13 @@ namespace WebApiTestClient
                 friendlyPath.AppendFormat("_{0}", queryKeyString.Replace('.', '-'));
             }
             return friendlyPath.ToString();
+        }
+
+        private static string[] GetQueryKeys(string url)
+        {
+            HttpRequestMessage m = new HttpRequestMessage(HttpMethod.Get, "http://localhost" + url);
+
+            return m.GetQueryNameValuePairs().Select(p => p.Key).ToArray();
         }
 
     }

@@ -47,7 +47,7 @@
         window.apiDescription = apiDescription = data;
         window.descCache = descCache;
 
-        dom.el("link", {"href": "/Content/WebApiTestClient/styles.css","rel":"stylesheet","type": "text/css"}, document.head);
+        dom.el("link", {"href": "/Content/WebApiTestClient.styles.css","rel":"stylesheet","type": "text/css"}, document.head);
         dom.el("script", { "src": "//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js", "type": "text/javascript" }, document.head);
         makeActivatorButton();
     }
@@ -364,23 +364,60 @@
                 url = url + '&';
             }
             var v = dateAsStringOrSelf( getValue(p));
-            v = v || "";
+            //v = v || "";
             if (p.IsList) {
+                v = v.filter(isValue);
                 v.forEach(function (vi, vii) {
                     vi = dateAsStringOrSelf(vi);
-                    vi = vi || "";
+                    //vi = vi || "";
                     if (vii > 0) {
                         url = url + "&";
                     }
+
                     url = url + p.Name + "[" + vii + "]=" + encodeURIComponent(vi);
                 });
             } else {
-                url = url + p.Name + "=" + encodeURIComponent(v);
+                if (isValue(v)) {
+                    url = url + p.Name + "=" + encodeURIComponent(v);
+                }
             }
 
         });
 
-        return "/" + url;
+
+        return cleanUrl( "/" + url);
+    }
+    
+    ///looks to see if a thing is an actual value and not just a truey value
+    function isValue(vv) {
+        if (vv === 0 || vv === false) {  //these are falsey values that are a value
+            return true;
+        }
+
+        //everything else is a value if it's truey and not a value if it's falsey
+        return (!!vv);
+    }
+
+    function cleanUrl(url) {
+
+        while (url.indexOf('&&') >= 0) {
+            url = url.replace('&&', '&');
+        }
+
+        if (url.indexOf('?&') >= 0) {
+            url = url.replace('?&', '?');
+        }
+
+        var idx = url.indexOf("&");
+        if (idx == url.length - 1) {
+            url = url.substring(0, idx);
+        }
+
+        idx = url.indexOf("?");
+        if (idx == url.length - 1) {
+            url = url.substring(0, idx);
+        }
+        return url;
     }
 
     function setHeaders(xhr) {
@@ -405,13 +442,17 @@
             var b = getValue(apiDescription.BodyParameter);;
             return JSON.stringify(b);
         }
+        return "";
     }
+
+
 
 
     //commands that respond to various buttons that could be clicked by the user.  functions correspond to data-cmd attribute values in links and buttons in the templates.  
     var commands = {
         sendRequest: function() {
-
+            dom.text('response-data', '', true);
+            progresser.start();
             var xhr = new XMLHttpRequest();
             xhr.addEventListener("load", function () {
                 var formattedResponse = xhr.status + " - " + xhr.statusText + "\n";
@@ -426,7 +467,9 @@
 
 
                 dom.text('response-data', formattedResponse, true);
+                window.scroll(0, document.body.scrollHeight);
 
+                progresser.stop();
             });
             xhr.open(apiDescription.Method, buildUrl());
 
@@ -621,6 +664,42 @@
         }
     }
 
+    var progresser = {
+        el: null,
+        btn:null,
+        token: null,
+
+        progress: function () {
+            dom.text(this.el, " >");
+        },
+        start: function () {
+
+            if (!this.el) {
+                this.el = dom.gid('progress');
+            }
+            if (!this.btn) {
+                this.btn = dom.gid('sendRequestBtn');
+            }
+
+            this.btn.disabled = true;
+
+            if (this.token == null) {
+                this.progress();
+                this.token = window.setInterval(this.progress.bind(this), 500);
+            }
+
+        },
+
+        stop: function () {
+            window.clearInterval(this.token);
+            this.token = null;
+            dom.text(this.el, "", true);
+            this.btn.disabled = false;
+
+        }
+    }
+
+
     //ajax to get the template html
     function getTemplate(callback) {
 
@@ -642,7 +721,7 @@
 
         }
 
-        xhr.open("GET", "/Content/WebApiTestClient/views.html");
+        xhr.open("GET", "/Content/WebApiTestClient.views.html");
         xhr.send();
     }
 

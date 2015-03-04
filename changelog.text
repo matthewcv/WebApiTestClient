@@ -1,3 +1,11 @@
+1.0.8 -
+removed dependency for system.web reference
+updated documentation
+moved some of the files around
+for query parameters, if you leave the field empty, it won't send the parameter at all.  
+show progress indicator while API request is under way
+
+
 1.0.7 -
 IDing header items separately from the others so that the elements are named more predictably
 

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Web.Http;
 
 namespace WebApiTestClient.Web.Controllers
@@ -12,6 +13,20 @@ namespace WebApiTestClient.Web.Controllers
     public class TestAttributeRoutingController : ApiController
     {
 
+        [HttpGet, Route("ThrowException")]
+        public string ThrowException()
+        {
+            throw new Exception("this exception thrown on purpose");
+        }
+
+
+        [HttpGet, Route("Wait")]
+        public string Wait(int? seconds = 3)
+        {
+            Thread.Sleep(seconds.Value * 1000);
+
+            return "waited " + seconds + " seconds";
+        }
 
         [HttpGet, Route("StringListInQuery")]
         public List<string> StringListInQuery([FromUri]List<string> things)
@@ -56,7 +71,7 @@ namespace WebApiTestClient.Web.Controllers
         }
 
         [HttpGet, Route("NullablesInUri")]
-        public string NullablesInUri(int? nullint, bool? nullbool)
+        public string NullablesInUri(int? nullint = null, bool? nullbool = null)
         {
             return nullint + ",  " + nullbool;
         }
