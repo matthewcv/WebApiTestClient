@@ -1,3 +1,7 @@
+1.0.10 -
+assigning the ID attribute to all input elements.
+fix a bug where it wasn leaving a '&' sometimes at the end of a url
+
 1.0.9 - 
 fixed the nuspec file 
 

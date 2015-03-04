@@ -214,6 +214,12 @@
             Handlebars.registerPartial(name, templates[name]);
         });
 
+        //this is a helper that will output a unique value sutibale for an id attribute for a dom element.
+        var id = 1;
+        Handlebars.registerHelper("uniqueId", function() {
+            return "idx-" + id++;
+        });
+
     }
 
 
@@ -408,7 +414,7 @@
             url = url.replace('?&', '?');
         }
 
-        var idx = url.indexOf("&");
+        var idx = url.lastIndexOf("&");
         if (idx == url.length - 1) {
             url = url.substring(0, idx);
         }
