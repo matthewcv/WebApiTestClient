@@ -224,6 +224,7 @@
 
 
     function getSimpleValue(desc) {
+        
         var input = document.querySelectorAll("input[name=input-" + desc.id + "]");
 
         var val = [].map.call(input,function (i) {
@@ -270,8 +271,14 @@
     function getComplexObjectValue(desc) {
         if (desc.Properties) {
             var obj = {};
-            desc.Properties.forEach(function(p) {
-                obj[p.Name] = getValue(p);
+            desc.Properties.forEach(function (p) {
+                var nullInput = document.querySelector("input[name=prop-excl-" + p.id + "]");
+                if (!(nullInput && nullInput.checked)) {
+                    obj[p.Name] = getValue(p);
+                    
+                }
+
+
             });
 
             return obj;
@@ -304,6 +311,11 @@
 
 
     function getValue(desc) {
+        var nullInput = document.querySelector("input[name=prop-null-" + desc.id + "]");
+        if (nullInput && nullInput.checked) {
+            return null;
+        }
+
         if (desc.IsDictionary) {
             return getDictionaryValue(desc);
         } else if (desc.IsSimple) {

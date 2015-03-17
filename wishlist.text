@@ -1,3 +1,5 @@
 * Keep a history of stuff that you enter (headers, resources, etc) and be able to re-use those items in other requests without having to re-type everything
+	saves headers for each API with version 1.0.4
 * explicitly set properties to null or blank or exclude them from the response
+	initial functionality with version 1.1.0
 * make the UI nicer

@@ -125,7 +125,7 @@
 
     <script type="text/html" id="tpl-watc-named-property">
         <div class="watc-property" id="property-{{id}}">
-            <span class="watc-label">{{Name}} ({{#if IsDictionary}}{ {{KeyTypeName}} : {{ValueTypeName}} }{{else}}{{TypeName}}{{#if IsList}}[]{{/if}}{{/if}}): </span>
+            <span class="watc-label">{{Name}} ({{#if IsDictionary}}{ {{KeyTypeName}} : {{ValueTypeName}} }{{else}}{{TypeName}}{{#if IsList}}[]{{/if}}{{/if}}, <label title="if checked, this property will be set to null in the response"><input type="checkbox" name="prop-null-{{id}}" />null</label>, <label title="if checked, this property and value will not be included in the response"><input type="checkbox" name="prop-excl-{{id}}" />excl</label>): </span>
             {{> any-type}}
         </div>
     </script>
