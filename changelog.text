@@ -1,3 +1,6 @@
+1.2.0 -
+adding ability for the client to work if your API is not at the root of the website.
+
 1.1.0 -
 adding some configuration to properties of resource objects so that you can explicitly set them to null or leave them out of the request
 also, being a little more semver-y.  many of the previous releases also included features and the middle number should have been incremented.  This adds a feature so the middle number increments.  There are no breaking or major changes.

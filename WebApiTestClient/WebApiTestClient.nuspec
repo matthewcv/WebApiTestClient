@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>matthewcv.WebApiTestClient</id>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <title>Web API Test Client</title>
     <authors>matthewcv</authors>
     <owners>matthewcv</owners>

@@ -5,6 +5,26 @@
     var currentHeaderId = 0;
     var descCache = {};
     var templates = {};
+    var siteRoot = null;
+
+    function getSiteRoot() {
+        if (siteRoot == null) {
+            var ss = document.getElementsByTagName("script");
+            [].forEach.call(ss, function(s) {
+                if (s.src.toLowerCase().indexOf("webapitestclient.js") >= 0) {
+                    siteRoot = s.src;
+                    siteRoot = siteRoot.replace(window.location.origin, "");
+                    siteRoot = siteRoot.substr(0, siteRoot.toLowerCase().indexOf("/scripts"));
+                }
+            });
+
+
+            siteRoot = siteRoot + "/";
+        }
+
+        return siteRoot;
+    }
+
 
     function nextId(desc, isHeader) {
         if (isHeader) {
@@ -39,7 +59,7 @@
     var apiId = window.location.pathname.split('/').pop();
 
     //go get the meta data for this API
-    getJson("/_WebApiTestClient?ApiName=" + apiId, getReadyToUseTestClient);
+    getJson(getSiteRoot() + "_WebApiTestClient?ApiName=" + apiId, getReadyToUseTestClient);
 
 
     //callback from getting meta data.
@@ -47,7 +67,7 @@
         window.apiDescription = apiDescription = data;
         window.descCache = descCache;
 
-        dom.el("link", {"href": "/Content/WebApiTestClient.styles.css","rel":"stylesheet","type": "text/css"}, document.head);
+        dom.el("link", { "href": getSiteRoot() + "Content/WebApiTestClient.styles.css", "rel": "stylesheet", "type": "text/css" }, document.head);
         dom.el("script", { "src": "//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js", "type": "text/javascript" }, document.head);
         makeActivatorButton();
     }
@@ -56,6 +76,7 @@
     function setUpApiDescForUi() {
         apiDescription.Headers = [];
         apiDescription.Origin = window.location.origin;
+        apiDescription.SiteRoot = getSiteRoot();
         apiDescription.QueryParameters.forEach(function(p) {
             nextId(p);
         });
@@ -403,7 +424,7 @@
         });
 
 
-        return cleanUrl( "/" + url);
+        return cleanUrl( getSiteRoot() + url);
     }
     
     ///looks to see if a thing is an actual value and not just a truey value
@@ -739,7 +760,7 @@
 
         }
 
-        xhr.open("GET", "/Content/WebApiTestClient.views.html");
+        xhr.open("GET", getSiteRoot() + "Content/WebApiTestClient.views.html");
         xhr.send();
     }
 
@@ -765,6 +786,9 @@
         xhr.open("GET", url);
         xhr.send();
     }
+
+
+
 
 
 })();

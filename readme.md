@@ -16,6 +16,7 @@ How to use:
    		<script type="text/javascript" src="/Scripts/WebApiTestClient.js"></script>
 	}
    ```	
+   Pay careful attention to the src attribute in that script element there.  If your API project is not at the root of the web host, you'll need to adjust it.  
 4. Register the route.  In your Global.asax or where ever you register your routes add this line: ```WebApiTestClient.WebApiTestClientHttpMessageHandler.RegisterRouteForTestClient(GlobalConfiguration.Configuration);```.  This route must be registered first before any other routes.
 5. Browse to one of the generated Help pages for an API.  The WebApiTestClient will initialize automatically and after a moment you will see a "Test this API" link at the bottom rigt of the window
 	if you click it, a UI will be generated that matches the inputs for that API.  Fill them in and click the 'send request' button.
