@@ -12,13 +12,15 @@ using System.Web.Http.Description;
 
 namespace WebApiTestClient
 {
-    public static class ApiExplorerHelper
+    internal static class ApiExplorerHelper
     {
-        private static Dictionary<string, Type> _typeCache = new Dictionary<string, Type>(); 
+        private static Dictionary<string, Type> _typeCache = new Dictionary<string, Type>();
+
+        public static HttpConfiguration config = null;
 
         public static ApiNamesInfo GetAPIs()
         {
-            IApiExplorer apiExplorer = System.Web.Http.GlobalConfiguration.Configuration.Services.GetApiExplorer();
+            IApiExplorer apiExplorer = config.Services.GetApiExplorer();
 
             List<ApiDescription> apiDescriptions = apiExplorer.ApiDescriptions.ToList();
 
@@ -28,7 +30,7 @@ namespace WebApiTestClient
 
         public static ApiInfo GetApi(string name)
         {
-            IApiExplorer apiExplorer = System.Web.Http.GlobalConfiguration.Configuration.Services.GetApiExplorer();
+            IApiExplorer apiExplorer = config.Services.GetApiExplorer();
             ApiDescription desc = apiExplorer.ApiDescriptions.FirstOrDefault(a => a.GetFriendlyId() == name);
 
             return GetApiInfo(desc);

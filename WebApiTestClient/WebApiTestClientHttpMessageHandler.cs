@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Http;
 using System.Web.Http.Routing;
 using Newtonsoft.Json;
 
 namespace WebApiTestClient
 {
-    public class WebApiTestClientHttpMessageHandler:HttpMessageHandler
+    internal class WebApiTestClientHttpMessageHandler:HttpMessageHandler
     {
 
 
@@ -37,10 +42,50 @@ namespace WebApiTestClient
 
 
 
-        public static void RegisterRouteForTestClient(System.Web.Http.HttpConfiguration config)
+
+    }
+
+    internal class ResourceHttpMessageHandler:HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            config.Routes.Add("__WebApiTestClient", new HttpRoute("_WebApiTestClient", null, null, null, new WebApiTestClientHttpMessageHandler()));
+            IDictionary<string, object> dictionary = request.GetRouteData().Values;
+            object thing = null;
+            if (dictionary.TryGetValue("thing", out thing) )
+            {
+                var sthing = thing.ToString().ToLowerInvariant();
+                Stream manifestResourceStream = null;
+                MediaTypeHeaderValue mediaType = null;
+                if (sthing == "script")
+                {
+                    manifestResourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WebApiTestClient.WebApiTestClient.js");
+                    mediaType = new MediaTypeHeaderValue("application/javascript");
+                }
+
+
+                StreamContent content = new StreamContent(manifestResourceStream);
+                content.Headers.ContentType = mediaType;
+                HttpResponseMessage m = request.CreateResponse(HttpStatusCode.OK);
+                m.Content = content;
+                return Task.FromResult(m);
+                
+
+            }
+
+            return Task.FromResult(request.CreateResponse(HttpStatusCode.NotFound));
         }
 
+        
+    }
+
+    public static class Extensions
+    {
+        public static void UseWebApiTestClient(this HttpConfiguration config)
+        {
+            ApiExplorerHelper.config = config;
+            config.Routes.Add("__WebApiTestClient.resources", new HttpRoute("_WebApiTestClient/{thing}", null, null, null, new ResourceHttpMessageHandler()));
+            config.Routes.Add("__WebApiTestClient", new HttpRoute("_WebApiTestClient", null, null, null, new WebApiTestClientHttpMessageHandler()));
+            
+        }
     }
 }
