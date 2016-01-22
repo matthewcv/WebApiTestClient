@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>API Index</title>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
+
+    <script type="text/handlebars" id="index-template">
+        <div>
+            {{#each ApiNames}}
+            <div><a href="_WebApiTestClient/{{.}}">{{.}}</a></div>
+            {{/each}}
+        </div>
+    </script>
+
+    <script type="text/javascript">
+
+
+        var indexTemplate = Handlebars.compile(document.getElementById('index-template').innerHTML);
+
+
+        //ajax to get a json object form the server
+        function getJson(url, callback) {
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.onload = function () {
+
+                if (xhr.status == 200) {
+                    var data = JSON.parse(xhr.response);
+
+                    callback(data);
+                } else {
+                    console.log("AJAX ERROR getJson");
+                    console.dir(xhr);
+                }
+
+            }
+
+            xhr.open("GET", url);
+            xhr.send();
+        }
+
+        function showApiIndex(data) {
+            console.dir(data);
+            document.body.innerHTML = indexTemplate(data);
+        }
+
+        getJson("_WebApiTestClient/apis", showApiIndex);
+
+    </script>
+
+</head>
+<body>
+
+</body>
+
+</html>

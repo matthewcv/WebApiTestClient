@@ -21,12 +21,13 @@ namespace WebApiTestClient
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            KeyValuePair<string, string> apiName = request.GetQueryNameValuePairs().FirstOrDefault(q => q.Key.Equals("ApiName", StringComparison.InvariantCultureIgnoreCase));
-
             object response = null;
-            if (!apiName.Equals(default(KeyValuePair<string, string>)))
+
+            IDictionary<string, object> dictionary = request.GetRouteData().Values;
+            object thing = null;
+            if (dictionary.TryGetValue("thing", out thing))
             {
-                response = ApiExplorerHelper.GetApi(apiName.Value);
+                response = ApiExplorerHelper.GetApi(thing.ToString());
             }
             else
             {
@@ -50,29 +51,52 @@ namespace WebApiTestClient
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             IDictionary<string, object> dictionary = request.GetRouteData().Values;
+            Stream manifestResourceStream = null;
+            MediaTypeHeaderValue mediaType = null;
             object thing = null;
             if (dictionary.TryGetValue("thing", out thing) )
             {
                 var sthing = thing.ToString().ToLowerInvariant();
-                Stream manifestResourceStream = null;
-                MediaTypeHeaderValue mediaType = null;
                 if (sthing == "script")
                 {
                     manifestResourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WebApiTestClient.WebApiTestClient.js");
                     mediaType = new MediaTypeHeaderValue("application/javascript");
                 }
-
-
-                StreamContent content = new StreamContent(manifestResourceStream);
-                content.Headers.ContentType = mediaType;
-                HttpResponseMessage m = request.CreateResponse(HttpStatusCode.OK);
-                m.Content = content;
-                return Task.FromResult(m);
-                
-
+                else if(sthing == "styles")
+                {
+                    manifestResourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WebApiTestClient.WebApiTestClient.styles.css");
+                    mediaType = new MediaTypeHeaderValue("text/css");
+                }
+                else if(sthing == "templates")
+                {
+                    manifestResourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WebApiTestClient.WebApiTestClient.templates.html");
+                    mediaType = new MediaTypeHeaderValue("text/html");
+                }
+                else
+                {
+                    var apis = ApiExplorerHelper.GetAPIs();
+                    if (apis.ApiNames.Contains(thing))
+                    {
+                        manifestResourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WebApiTestClient.WebApiTestClient.api.html");
+                        mediaType = new MediaTypeHeaderValue("text/html");
+                    }
+                    else {
+                        return Task.FromResult(request.CreateResponse(HttpStatusCode.NotFound));
+                    }
+                }
+            }
+            else
+            {
+                manifestResourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WebApiTestClient.WebApiTestClient.html");
+                mediaType = new MediaTypeHeaderValue("text/html");
             }
 
-            return Task.FromResult(request.CreateResponse(HttpStatusCode.NotFound));
+            StreamContent content = new StreamContent(manifestResourceStream);
+            content.Headers.ContentType = mediaType;
+            HttpResponseMessage m = request.CreateResponse(HttpStatusCode.OK);
+            m.Content = content;
+            return Task.FromResult(m);
+
         }
 
         
@@ -83,8 +107,8 @@ namespace WebApiTestClient
         public static void UseWebApiTestClient(this HttpConfiguration config)
         {
             ApiExplorerHelper.config = config;
-            config.Routes.Add("__WebApiTestClient.resources", new HttpRoute("_WebApiTestClient/{thing}", null, null, null, new ResourceHttpMessageHandler()));
-            config.Routes.Add("__WebApiTestClient", new HttpRoute("_WebApiTestClient", null, null, null, new WebApiTestClientHttpMessageHandler()));
+            config.Routes.Add("__WebApiTestClient.apis", new HttpRoute("_WebApiTestClient/apis/{thing}", new HttpRouteValueDictionary(new { thing = RouteParameter.Optional }), null, null, new WebApiTestClientHttpMessageHandler()));
+            config.Routes.Add("__WebApiTestClient", new HttpRoute("_WebApiTestClient/{thing}", new HttpRouteValueDictionary(new { thing = RouteParameter.Optional }), null, null, new ResourceHttpMessageHandler()));
             
         }
     }

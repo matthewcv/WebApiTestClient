@@ -7,6 +7,13 @@
     var templates = {};
     var siteRoot = null;
 
+
+    //the name of the api is the last segment of the url. 
+    var apiId = window.location.pathname.split('/').pop();
+
+    //go get the meta data for this API
+    getJson(getSiteRoot() + "_WebApiTestClient/apis/" + apiId, getReadyToUseTestClient);
+
     function getSiteRoot() {
         if (siteRoot == null) {
             var ss = document.getElementsByTagName("script");
@@ -14,12 +21,11 @@
                 if (s.src.toLowerCase().indexOf("_webapitestclient/script") >= 0) {
                     siteRoot = s.src;
                     siteRoot = siteRoot.replace(window.location.origin, "");
-                    siteRoot = siteRoot.substr(0, siteRoot.toLowerCase().indexOf("/scripts"));
+                    siteRoot = siteRoot.substr(0, siteRoot.toLowerCase().indexOf("_webapitestclient/script"));
                 }
             });
 
 
-            siteRoot = siteRoot + "/";
         }
 
         return siteRoot;
@@ -55,22 +61,18 @@
         return JSON.parse(JSON.stringify(thing));
     }
 
-    //the name of the api is the last segment of the url. 
-    var apiId = window.location.pathname.split('/').pop();
-
-    //go get the meta data for this API
-    getJson(getSiteRoot() + "_WebApiTestClient?ApiName=" + apiId, getReadyToUseTestClient);
-
 
     //callback from getting meta data.
     function getReadyToUseTestClient(data) {
         window.apiDescription = apiDescription = data;
         window.descCache = descCache;
 
-        dom.el("link", { "href": getSiteRoot() + "Content/WebApiTestClient.styles.css", "rel": "stylesheet", "type": "text/css" }, document.head);
+        dom.el("link", { "href": getSiteRoot() + "_WebApiTestClient/styles", "rel": "stylesheet", "type": "text/css" }, document.head);
         dom.el("script", { "src": "//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js", "type": "text/javascript" }, document.head);
         makeActivatorButton();
     }
+
+
 
     //take the metadata and extend the objects a bit to help out with the handlebars templates
     function setUpApiDescForUi() {
@@ -760,7 +762,7 @@
 
         }
 
-        xhr.open("GET", getSiteRoot() + "Content/WebApiTestClient.views.html");
+        xhr.open("GET", getSiteRoot() + "_WebApiTestClient/templates");
         xhr.send();
     }
 
